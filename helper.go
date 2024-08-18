@@ -8,6 +8,8 @@ package helper
 import (
 	"database/sql"
 	"encoding/json"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"net/http"
 )
 
@@ -63,7 +65,12 @@ func CommitOrRollback(tx *sql.Tx) {
 	}
 }
 
-func VerifySession(url string) string {
+type JWTClaims struct {
+	UserId uuid.UUID `json:"user_id"`
+	jwt.RegisteredClaims
+}
+
+func VerifySession(url string) *JWTClaims {
 	response, err := http.Get(url)
 	PanicIfError(err)
 
@@ -71,5 +78,11 @@ func VerifySession(url string) string {
 
 	ReadResponseBody(response, &session)
 
-	return session.Data.Token
+	token, err := jwt.ParseWithClaims(session.Data.Token, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte("my-secret-key"), nil
+	})
+	PanicIfError(err)
+	if claims, ok := token.Claims.(*JWTClaims); ok && token.Valid {
+		return claims
+	}
 }
