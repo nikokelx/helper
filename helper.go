@@ -1,3 +1,8 @@
+/*
+Raffael Rot
+V0.1.1
+*/
+
 package helper
 
 import (
