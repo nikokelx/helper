@@ -84,5 +84,7 @@ func VerifySession(url string) *JWTClaims {
 	PanicIfError(err)
 	if claims, ok := token.Claims.(*JWTClaims); ok && token.Valid {
 		return claims
+	} else {
+		return nil
 	}
 }
