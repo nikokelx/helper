@@ -12,6 +12,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"net/http"
+	"strings"
 )
 
 type SessionResponse struct {
@@ -71,8 +72,11 @@ type JWTClaims struct {
 	jwt.RegisteredClaims
 }
 
-func ParseToken(tokenString string, secret string) (*JWTClaims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
+func ParseToken(authorizationToken string, secret string) (*JWTClaims, error) {
+
+	encodedToken := strings.TrimPrefix(authorizationToken, "Bearer ")
+
+	token, err := jwt.ParseWithClaims(encodedToken, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(secret), nil
 	})
 	PanicIfError(err)
