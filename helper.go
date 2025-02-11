@@ -6,6 +6,7 @@ V0.1.1
 package helper
 
 import (
+	"crypto/sha256"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -105,4 +106,14 @@ func VerifySession(url string) *JWTClaims {
 	} else {
 		return nil
 	}
+}
+
+func GenerateCompositeUUID(ids ...uuid.UUID) (uuid.UUID, error) {
+	combined := ""
+	for _, id := range ids {
+		combined += id.String()
+	}
+
+	hash := sha256.Sum256([]byte(combined))
+	return uuid.FromBytes(hash[:16])
 }
