@@ -24,9 +24,10 @@ type SessionResponse struct {
 }
 
 type WebResponse struct {
-	Code   int         `json:"code"`
-	Status string      `json:"status"`
-	Data   interface{} `json:"data,omitempty"`
+	Code    int         `json:"code"`
+	Status  string      `json:"status"`
+	Success bool        `json:"success,omitzero"`
+	Data    interface{} `json:"data,omitempty"`
 }
 
 func PanicIfError(err error) {
