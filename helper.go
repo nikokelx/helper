@@ -36,7 +36,7 @@ func PanicIfError(err error) {
 	}
 }
 
-func check(values []uuid.UUID) (uuid.UUID, error) {
+func Check(values []uuid.UUID) (uuid.UUID, error) {
 	if len(values) == 0 {
 		return uuid.New(), nil
 	} else {
