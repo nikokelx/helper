@@ -36,6 +36,14 @@ func PanicIfError(err error) {
 	}
 }
 
+func check(values []uuid.UUID) (uuid.UUID, error) {
+	if len(values) == 0 {
+		return uuid.New(), nil
+	} else {
+		return values[0], nil
+	}
+}
+
 func ReadRequestBody(r *http.Request, result interface{}) {
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(result)
