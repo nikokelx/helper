@@ -24,10 +24,10 @@ type SessionResponse struct {
 }
 
 type WebResponse struct {
-	Code    int         `json:"code"`
-	Status  string      `json:"status"`
+	Code    int         `json:"code,omitzero"`
+	Status  string      `json:"status,omitzero"`
 	Success bool        `json:"success,omitzero"`
-	Data    interface{} `json:"data,omitempty"`
+	Data    interface{} `json:"data,omitzero"`
 }
 
 func PanicIfError(err error) {
@@ -37,6 +37,7 @@ func PanicIfError(err error) {
 }
 
 func Check(values ...uuid.UUID) uuid.UUID {
+
 	if len(values) == 0 {
 		return uuid.New()
 	} else {
@@ -53,12 +54,15 @@ func ReadRequestBody(r *http.Request, result interface{}) {
 func ReadResponseBody(r *http.Response, result interface{}) {
 	decode := json.NewDecoder(r.Body)
 	err := decode.Decode(result)
+
 	PanicIfError(err)
 }
 
-func WriteResponseBody(write http.ResponseWriter, response interface{}) {
-	write.Header().Add("Content-Type", "application/json")
-	encoder := json.NewEncoder(write)
+func WriteResponseBody(writer http.ResponseWriter, status int, response interface{}) {
+
+	writer.WriteHeader(status)
+	writer.Header().Add("Content-Type", "application/json")
+	encoder := json.NewEncoder(writer)
 	err := encoder.Encode(response)
 	PanicIfError(err)
 }
