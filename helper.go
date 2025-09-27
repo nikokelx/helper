@@ -9,10 +9,11 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
 	"net/http"
 	"strings"
+
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 type SessionResponse struct {
@@ -37,7 +38,6 @@ func PanicIfError(err error) {
 }
 
 func Check(values ...uuid.UUID) uuid.UUID {
-
 	if len(values) == 0 {
 		return uuid.New()
 	} else {
@@ -59,7 +59,6 @@ func ReadResponseBody(r *http.Response, result interface{}) {
 }
 
 func WriteResponseBody(writer http.ResponseWriter, status int, response interface{}) {
-
 	writer.WriteHeader(status)
 	writer.Header().Add("Content-Type", "application/json")
 	encoder := json.NewEncoder(writer)
@@ -86,7 +85,6 @@ type JWTClaims struct {
 }
 
 func ParseToken(authorizationToken string, secret string) (*JWTClaims, error) {
-
 	encodedToken := strings.TrimPrefix(authorizationToken, "Bearer ")
 
 	token, err := jwt.ParseWithClaims(encodedToken, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
@@ -99,6 +97,32 @@ func ParseToken(authorizationToken string, secret string) (*JWTClaims, error) {
 	} else {
 		return nil, fmt.Errorf("invalid token")
 	}
+}
+
+func NewDatabaseConnection(
+	username string,
+	password string,
+	dbname string,
+	host string,
+	port string,
+) *sql.DB {
+	// Create connection string
+	connStr := fmt.Sprintf(
+		"user=%s password=%s dbname=%s sslmode=disable host=%s port=%s",
+		username,
+		password,
+		dbname,
+		host,
+		port,
+	)
+
+	db, errDB := sql.Open("postgres", connStr)
+	PanicIfError(errDB)
+
+	errPing := db.Ping()
+	PanicIfError(errPing)
+
+	return db
 }
 
 func VerifySession(url string) *JWTClaims {
